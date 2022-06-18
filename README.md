@@ -54,10 +54,10 @@ You may also pass keyword args to `init`, and they will be passed down to the de
 
 ```py
 
-def default(name="John Doe"):
+def default(name="John Doe", email="john.doe@example.com"):
     return {
-        "name": "John Doe",
-        "email": "john.doe@example.com",
+        "name": name,
+        "email": email,
     }
 
 initializer = JSONInitializer(
