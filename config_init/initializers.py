@@ -30,26 +30,26 @@ class ConfigInitializer(Generic[TRaw]):
         Insert a relative (to the config file) or absolute schema path into the config,
         to provide type hints when editing the config
         """
-        pass # pragma: no cover
+        pass  # pragma: no cover
 
     @abstractmethod
     def strip_schema_path(self, config: TRaw) -> TRaw:
         """
         Remove the schema reference from a config
         """
-        pass # pragma: no cover
+        pass  # pragma: no cover
 
     @abstractmethod
     def serialize(self, processed: TRaw) -> TRaw:
         """
         Convert a processed config (usually `dict`) into its raw format, ready to write to disk.
         """
-        pass # pragma: no cover
+        pass  # pragma: no cover
 
     @abstractmethod
     def write(self, raw: TRaw, path: Path):
         """Write the raw config data to disk"""
-        pass # pragma: no cover
+        pass  # pragma: no cover
 
     def init(
         self,

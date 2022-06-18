@@ -1,6 +1,7 @@
 import unittest
 from config_init.utils import make_callable
 
+
 class TestMakeCallable(unittest.TestCase):
     def test_callable(self):
         def func():

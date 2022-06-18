@@ -26,6 +26,6 @@ def make_callable(
         return lambda *args, **kwargs: value
 
 
-def get_relative(config_path: Path, schema_path: Path): 
+def get_relative(config_path: Path, schema_path: Path):
     """Get the relative path to move from a config path to the schema file"""
     return Path(os.path.relpath(schema_path, config_path.parent))
