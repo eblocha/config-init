@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Callable, Generic, Union
 
-from .utils import is_abstract, make_callable
+from .utils import get_relative, is_abstract, make_callable
 from .types import MaybeCallable, TRaw, TSchema
 
 
@@ -86,7 +86,8 @@ class ConfigInitializer(Generic[TRaw]):
             and schema_path is not None
             and not is_abstract(self.inject_schema_path)
         ):
-            default = self.inject_schema_path(default, schema_path)
+            relative_schema_path = get_relative(path, schema_path)
+            default = self.inject_schema_path(default, relative_schema_path)
             default = self.serialize(default)
 
         # otherwise, remove any schema references if we have a method for that

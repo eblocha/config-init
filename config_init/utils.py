@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import Callable, TypeVar, Union, no_type_check
 
 
@@ -22,3 +24,8 @@ def make_callable(
         return value
     else:
         return lambda *args, **kwargs: value
+
+
+def get_relative(config_path: Path, schema_path: Path): 
+    """Get the relative path to move from a config path to the schema file"""
+    return Path(os.path.relpath(schema_path, config_path.parent))

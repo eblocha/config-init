@@ -81,6 +81,24 @@ class TestJSONDirect(unittest.TestCase):
 
             self.assertDictEqual(written, self.default)
 
+    def test_schema_otherdir(self):
+        """Test the case when the schema is in another directory"""
+        schema_path = Path("schema") / "schema.json"
+        initializer = JSONInitializer(self.default, schema=self.schema)
+
+        path = Path("config/test.json")
+
+        with self.runner.isolated_filesystem():
+            schema_path.parent.mkdir(exist_ok=True)
+            path.parent.mkdir(exist_ok=True)
+
+            initializer.init(path, schema_path=schema_path)
+            written = self.get_config(path)
+
+            self.assertDictEqual(
+                written, {**self.default, "$schema": "../schema/schema.json"}
+            )
+
 
 class TestJSONNone(unittest.TestCase):
     """JSON initializer with None for a default config value"""
@@ -137,7 +155,7 @@ class TestJSONLambda(unittest.TestCase):
             initializer.init(path)
             written = self.get_config(path)
             self.assertDictEqual(written, self.default())
-    
+
     def test_args_passed(self):
         initializer = JSONInitializer(self.default)
 
