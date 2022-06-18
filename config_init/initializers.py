@@ -26,7 +26,7 @@ class ConfigInitializer(Generic[TRaw]):
     def inject_schema_path(
         self,
         config: TRaw,
-        schema_path: Union[Path, None] = None,
+        schema_path: Path,
     ) -> TRaw:
         """
         Insert a relative (to the config file) or absolute schema path into the config,
@@ -168,21 +168,17 @@ class YamlInitializer(TextInitializer):
     def inject_schema_path(
         self,
         config: str,
-        schema_path: Union[Path, None] = None,
+        schema_path: Path,
     ) -> str:
         lines = config.splitlines(keepends=True)
 
-        if schema_path is not None:
-            # inject the dynamic schema path declaration
-            decl = f"{self.decl_start}{schema_path}\n"
-            if lines[0].strip().startswith(self.decl_start):
-                # replace first line if it's a schema declaration
-                lines[0] = decl
-            else:
-                lines.insert(0, decl)
+        # inject the dynamic schema path declaration
+        decl = f"{self.decl_start}{schema_path}\n"
+        if lines[0].strip().startswith(self.decl_start):
+            # replace first line if it's a schema declaration
+            lines[0] = decl
         else:
-            if lines[0].startswith(self.decl_start):
-                lines[0] = ""
+            lines.insert(0, decl)
 
         return "".join(lines)
 
@@ -218,14 +214,10 @@ class JSONInitializer(ConfigInitializer):
     def inject_schema_path(
         self,
         config: dict,
-        schema_path=None,
+        schema_path,
     ) -> dict:
         copied = config.copy()
-
-        if schema_path is not None:
-            copied[self.schema_property] = str(schema_path)
-        elif self.schema_property in copied:
-            del copied[self.schema_property]
+        copied[self.schema_property] = str(schema_path)
 
         return copied
 
