@@ -8,3 +8,6 @@ test:
 
 typecheck:
 	mypy -m config_init
+
+format:
+	black config_init tests
