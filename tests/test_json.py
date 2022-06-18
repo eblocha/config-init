@@ -6,13 +6,13 @@ from config_init.initializers import JSONInitializer
 
 
 class TestJSONDirect(unittest.TestCase):
+    """JSON initializer with a direct default value"""
     @classmethod
     def setUpClass(cls) -> None:
         cls.runner = CliRunner()
 
     def setUp(self) -> None:
         self.default = {"name": "Test", "email": "test@example.com"}
-
         self.schema = {"$schema": ""}
 
     def get_config(self, path: Path):

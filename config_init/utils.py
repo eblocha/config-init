@@ -1,6 +1,11 @@
 from typing import Callable, TypeVar, Union
 
 
+def is_abstract(method) -> bool:
+    """Returns True if `method` is abstract (not implemented)"""
+    return getattr(method, "__isabstractmethod__", False)
+
+
 _TValue = TypeVar("_TValue")
 
 

@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Callable, Generic, Union
 
-from .utils import make_callable
+from .utils import is_abstract, make_callable
 from .types import MaybeCallable, TRaw, TSchema
 
 
@@ -11,8 +11,6 @@ class ConfigInitializer(Generic[TRaw]):
     """
     ConfigInitializers handle initializing a default config, and injecting a schema path
     """
-    can_inject = False
-    can_strip = False
 
     def __init__(self, default: MaybeCallable[TRaw], schema: TSchema) -> None:
         self._get_schema: Callable[[], Union[dict, None]] = make_callable(schema)
@@ -86,13 +84,13 @@ class ConfigInitializer(Generic[TRaw]):
         if (
             inject_schema
             and schema_path is not None
-            and self.can_inject
+            and not is_abstract(self.inject_schema_path)
         ):
             default = self.inject_schema_path(default, schema_path)
             default = self.serialize(default)
 
         # otherwise, remove any schema references if we have a method for that
-        elif self.can_strip:
+        elif not is_abstract(self.strip_schema_path):
             default = self.strip_schema_path(default)
             default = self.serialize(default)
 
@@ -153,8 +151,6 @@ class YamlInitializer(TextInitializer):
     Initializer for yaml configuration files.
     Injects schema with a comment.
     """
-    can_inject = True
-    can_strip = True
 
     def __init__(
         self,
@@ -196,8 +192,6 @@ class JSONInitializer(ConfigInitializer):
     Initializer for JSON configuration files.
     Injects schema with a "$schema" root property.
     """
-    can_inject = True
-    can_strip = True
 
     def __init__(
         self,
