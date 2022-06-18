@@ -7,6 +7,7 @@ from config_init.initializers import JSONInitializer
 
 class TestJSONDirect(unittest.TestCase):
     """JSON initializer with a direct default value"""
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.runner = CliRunner()
@@ -80,8 +81,10 @@ class TestJSONDirect(unittest.TestCase):
 
             self.assertDictEqual(written, self.default)
 
+
 class TestJSONNone(unittest.TestCase):
     """JSON initializer with None for a default config value"""
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.runner = CliRunner()
@@ -89,7 +92,7 @@ class TestJSONNone(unittest.TestCase):
     def setUp(self) -> None:
         self.default = None
         self.schema = {"$schema": ""}
-    
+
     def test_noschema(self):
         initializer = JSONInitializer(self.default)
 
@@ -108,3 +111,39 @@ class TestJSONNone(unittest.TestCase):
             schema_path = Path("schema") / "schema.json"
             initializer.init(path, schema_path=schema_path)
             self.assertListEqual(list(Path().iterdir()), [])
+
+
+class TestJSONLambda(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.runner = CliRunner()
+
+    def setUp(self) -> None:
+        self.default = lambda name="Test": {"name": name, "email": "test@example.com"}
+        self.schema = {"$schema": ""}
+
+    def get_config(self, path: Path):
+        self.assertTrue(path.exists())
+
+        with path.open() as f:
+            return json.load(f)
+
+    def test_no_args(self):
+        initializer = JSONInitializer(self.default)
+
+        path = Path("test.json")
+
+        with self.runner.isolated_filesystem():
+            initializer.init(path)
+            written = self.get_config(path)
+            self.assertDictEqual(written, self.default())
+    
+    def test_args_passed(self):
+        initializer = JSONInitializer(self.default)
+
+        path = Path("test.json")
+
+        with self.runner.isolated_filesystem():
+            initializer.init(path, name="test2")
+            written = self.get_config(path)
+            self.assertDictEqual(written, self.default(name="test2"))
