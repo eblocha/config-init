@@ -4,5 +4,6 @@ build
 click
 coverage
 twine
+mypy
 
 # package dependencies

@@ -5,3 +5,6 @@ test:
 	coverage run -m unittest tests
 	coverage html
 	coverage report
+
+typecheck:
+	mypy config_init

@@ -1,4 +1,4 @@
-from typing import Callable, TypeVar, Union
+from typing import Callable, TypeVar, Union, no_type_check
 
 
 def is_abstract(method) -> bool:
@@ -8,7 +8,9 @@ def is_abstract(method) -> bool:
 
 _TValue = TypeVar("_TValue")
 
-
+# we have to ignore here since type narrowing doesn't work for the else case
+# https://github.com/python/mypy/issues/11907
+@no_type_check
 def make_callable(
     value: Union[_TValue, Callable[..., _TValue]] = None
 ) -> Callable[..., _TValue]:
