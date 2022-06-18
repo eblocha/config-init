@@ -79,3 +79,32 @@ class TestJSONDirect(unittest.TestCase):
             written = self.get_config(path)
 
             self.assertDictEqual(written, self.default)
+
+class TestJSONNone(unittest.TestCase):
+    """JSON initializer with None for a default config value"""
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.runner = CliRunner()
+
+    def setUp(self) -> None:
+        self.default = None
+        self.schema = {"$schema": ""}
+    
+    def test_noschema(self):
+        initializer = JSONInitializer(self.default)
+
+        path = Path("test.json")
+
+        with self.runner.isolated_filesystem():
+            initializer.init(path)
+            self.assertListEqual(list(Path().iterdir()), [])
+
+    def test_direct_schema(self):
+        initializer = JSONInitializer(self.default, schema=self.schema)
+
+        path = Path("test.json")
+
+        with self.runner.isolated_filesystem():
+            schema_path = Path("schema") / "schema.json"
+            initializer.init(path, schema_path=schema_path)
+            self.assertListEqual(list(Path().iterdir()), [])
