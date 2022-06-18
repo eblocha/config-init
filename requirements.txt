@@ -1,0 +1,8 @@
+# dev dependencies
+black
+build
+click
+coverage
+twine
+
+# package dependencies

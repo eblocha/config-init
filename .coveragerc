@@ -1,0 +1,19 @@
+[run]
+branch=true
+source=config_init
+
+[report]
+exclude_lines = 
+  pragma: no cover
+  
+  raise AssertionError
+  raise NotImplementedError
+
+  if 0:
+  if __name__ == .__main__.
+
+  if t.TYPE_CHECKING
+  if TYPE_CHECKING
+
+[html]
+directory=coverage
