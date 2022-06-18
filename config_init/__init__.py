@@ -1,7 +1,6 @@
 from .initializers import (
     ConfigInitializer,
     JSONInitializer,
-    BinaryInitializer,
     TextInitializer,
     YamlInitializer,
 )
@@ -10,7 +9,6 @@ from .initializers import (
 __all__ = [
     "ConfigInitializer",
     "JSONInitializer",
-    "BinaryInitializer",
     "TextInitializer",
     "YamlInitializer",
 ]

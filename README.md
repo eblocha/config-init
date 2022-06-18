@@ -106,10 +106,7 @@ You can change this declaration string with an arg to the initializer:
 YamlInitializer(..., decl_start="# yaml-language-server: $schema=")
 ```
 
-These do not inject any schema:
-
-- TextInitializer
-- BinaryInitializer
+The TextInitializer does not inject any schema.
 
 ## Get the underlying schema
 

@@ -232,24 +232,3 @@ class JSONInitializer(ConfigInitializer):
     def write(self, raw: dict, path: Path):
         with path.open("w") as f:
             json.dump(raw, f)
-
-
-class BinaryInitializer(ConfigInitializer):
-    """
-    Initializer for binary configuration files.
-    Does not inject schema.
-    """
-
-    def __init__(
-        self,
-        default: MaybeCallable[bytes],
-        schema: TSchema = None,
-    ) -> None:
-        super().__init__(default, schema)
-
-    def serialize(self, processed):
-        return processed
-
-    def write(self, raw: bytes, path: Path):
-        with path.open("wb") as f:
-            f.write(raw)
