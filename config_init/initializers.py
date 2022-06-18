@@ -116,13 +116,18 @@ class ConfigInitializer(Generic[TRaw]):
         """
         Check if a local schema id matches the app schema id. Return True if they match.
         """
+        _schema = self.schema
+        if _schema is None:
+            # always report a match if we don't have a schema
+            return True
+
         if schema_path.exists():
             with schema_path.open() as f:
                 local_schema = json.load(f)
         else:
             local_schema = {}
 
-        return local_schema.get("$id") == (self.schema or {}).get("$id")
+        return local_schema.get("$id") == _schema.get("$id")
 
 
 class TextInitializer(ConfigInitializer):
