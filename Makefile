@@ -7,4 +7,4 @@ test:
 	coverage report
 
 typecheck:
-	mypy config_init
+	mypy -m config_init
