@@ -92,7 +92,7 @@ class ConfigInitializer(Generic[TRaw]):
             default = self.serialize(default)
 
         # otherwise, remove any schema references if we have a method for that
-        elif not inject_schema and self.can_strip:
+        elif self.can_strip:
             default = self.strip_schema_path(default)
             default = self.serialize(default)
 

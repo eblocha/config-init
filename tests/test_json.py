@@ -62,7 +62,7 @@ class TestJSONDirect(unittest.TestCase):
 
             self.assertDictEqual(written, self.default)
 
-    def test_direct_schema_nopath(self):
+    def test_direct_schema_off(self):
         """Make sure we remove a schema reference when forced off"""
         schema_path = Path("schema") / "schema.json"
 
