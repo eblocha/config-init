@@ -95,6 +95,8 @@ class ConfigInitializer(Generic[TRaw]):
             default = self.strip_schema_path(default)
             default = self.serialize(default)
 
+        path.parent.mkdir(parents=True, exist_ok=True)
+
         self.write(default, path)
 
     def update_schema(self, schema_path: Union[Path, None] = None):
@@ -108,6 +110,8 @@ class ConfigInitializer(Generic[TRaw]):
 
         if _schema is None:
             return
+
+        schema_path.parent.mkdir(parents=True, exist_ok=True)
 
         with schema_path.open("w") as f:
             json.dump(_schema, f)

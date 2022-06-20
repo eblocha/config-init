@@ -39,7 +39,6 @@ class TestJSONDirect(unittest.TestCase):
 
         with self.runner.isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
@@ -57,7 +56,6 @@ class TestJSONDirect(unittest.TestCase):
 
         with self.runner.isolated_filesystem():
 
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path)
             written = self.get_config(path)
 
@@ -75,7 +73,6 @@ class TestJSONDirect(unittest.TestCase):
 
         with self.runner.isolated_filesystem():
 
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path, schema_path=schema_path, inject_schema=False)
             written = self.get_config(path)
 
@@ -89,9 +86,6 @@ class TestJSONDirect(unittest.TestCase):
         path = Path("config/test.json")
 
         with self.runner.isolated_filesystem():
-            schema_path.parent.mkdir(exist_ok=True)
-            path.parent.mkdir(exist_ok=True)
-
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
@@ -127,7 +121,6 @@ class TestJSONNone(unittest.TestCase):
 
         with self.runner.isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
-            initializer.init(path, schema_path=schema_path)
             self.assertListEqual(list(Path().iterdir()), [])
 
 

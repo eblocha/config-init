@@ -53,7 +53,6 @@ class TestYamlDirect(unittest.TestCase):
 
         with self.runner.isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
@@ -70,8 +69,6 @@ class TestYamlDirect(unittest.TestCase):
         path = Path("test.yml")
 
         with self.runner.isolated_filesystem():
-
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path)
             written = self.get_config(path)
 
@@ -88,8 +85,6 @@ class TestYamlDirect(unittest.TestCase):
         path = Path("test.yml")
 
         with self.runner.isolated_filesystem():
-
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path, schema_path=schema_path, inject_schema=False)
             written = self.get_config(path)
 
@@ -103,9 +98,6 @@ class TestYamlDirect(unittest.TestCase):
         path = Path("config/test.yml")
 
         with self.runner.isolated_filesystem():
-            schema_path.parent.mkdir(exist_ok=True)
-            path.parent.mkdir(exist_ok=True)
-
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
@@ -121,7 +113,6 @@ class TestYamlDirect(unittest.TestCase):
 
         with self.runner.isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
-            schema_path.parent.mkdir(exist_ok=True)
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
