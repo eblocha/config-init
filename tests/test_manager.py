@@ -69,27 +69,44 @@ class TestInitBasic(TestConfigManager):
 class TestInitTemplate(TestConfigManager):
     def setUp(self) -> None:
         self.initializer = JSONInitializer({})
+        self.template_initializer = JSONInitializer({"name": "test"})
         self.path = Path("config.json")
         self.root = Path("test")
         self.manager = ConfigManager(
             self.constructor, self.path, initializer=self.initializer
         )
+        self.template_manager = ConfigManager(
+            self.constructor, self.path, initializer=self.template_initializer
+        )
+        self.template = Path("template")
+
+    def get_contents(self):
+        cfg = self.root / self.path
+        tmpl = self.template / self.path
+
+        with cfg.open("r") as f:
+            config = f.read()
+
+        with tmpl.open("r") as f:
+            template = f.read()
+
+        return config, template
 
     def test_init_empty(self):
         """Should initialize a non-existing config from a template"""
 
         with isolated_filesystem():
-            self.manager.init("template")
+            self.template_manager.init("template")
             written = self.manager.init(self.root, template="template")
 
-            self.assertTrue((self.root / self.path).exists())
+            self.assertEqual(*self.get_contents())
             self.assertTrue(written)
 
     def test_init_existing(self):
         """Should not overwrite an existing config from template"""
 
         with isolated_filesystem():
-            self.manager.init("template")
+            self.template_manager.init("template")
             self.manager.init(self.root)
 
             path = self.root / self.path
@@ -102,13 +119,14 @@ class TestInitTemplate(TestConfigManager):
 
             mtime_end = path.stat().st_mtime_ns
             self.assertEqual(mtime_start, mtime_end)
+            self.assertNotEqual(*self.get_contents())
             self.assertFalse(written)
 
     def test_init_overwrite(self):
         """Should overwrite an existing config from template when forced"""
 
         with isolated_filesystem():
-            self.manager.init("template")
+            self.template_manager.init("template")
             self.manager.init(self.root)
 
             path = self.root / self.path
@@ -123,6 +141,7 @@ class TestInitTemplate(TestConfigManager):
 
             mtime_end = path.stat().st_mtime_ns
             self.assertNotEqual(mtime_start, mtime_end)
+            self.assertEqual(*self.get_contents())
             self.assertTrue(written)
 
     def test_init_nonexistant(self):
