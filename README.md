@@ -166,6 +166,11 @@ class ConfigInitializer(Generic[TRaw]):
         """Write the raw config data to disk"""
         pass
 
+    @abstractmethod
+    def read(self, path: Path) -> TRaw:
+        """Read the raw config data from disk"""
+        pass
+
     # implemented
     def init(
         self,
