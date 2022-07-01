@@ -10,7 +10,7 @@ S = TypeVar("S")
 class IConfig(Protocol):
     @classmethod
     def from_file(cls: Type[S], f: IO) -> S:
-        ... # pragma: no cover
+        ...  # pragma: no cover
 
 
 T = TypeVar("T", bound=IConfig, covariant=True)
@@ -103,7 +103,9 @@ class ConfigManager(Generic[T]):
         self._path = None
 
     def _load(self, path: Path):
-        """Force the config to load from disk. If the path does not exist, returns None"""
+        """Force the config to load from disk. If the path does not exist, config is set to None"""
+        self._path = path
+
         if not path.exists():
             self._config = None
         else:
@@ -118,6 +120,5 @@ class ConfigManager(Generic[T]):
 
         if self._config is None or self._path != path:
             self._load(path)
-            self._path = path
 
         return self._config
