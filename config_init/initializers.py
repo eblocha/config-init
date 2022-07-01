@@ -51,6 +51,11 @@ class ConfigInitializer(Generic[TRaw]):
         """Write the raw config data to disk"""
         pass  # pragma: no cover
 
+    @abstractmethod
+    def read(self, path: Path) -> TRaw:
+        """Read the raw config data from disk"""
+        pass  # pragma: no cover
+
     def init(
         self,
         path: Path,
@@ -75,10 +80,10 @@ class ConfigInitializer(Generic[TRaw]):
         """
         default = self._default(**kwargs)
 
+        self.update_schema(schema_path)
+
         if default is None:
             return
-
-        self.update_schema(schema_path)
 
         # inject schema if we want it, we have a path, and the method is implemented
         if (
@@ -155,6 +160,10 @@ class TextInitializer(ConfigInitializer):
         with path.open("w") as f:
             f.write(str(raw))
 
+    def read(self, path: Path):
+        with path.open("r") as f:
+            return f.read()
+
 
 class YamlInitializer(TextInitializer):
     """
@@ -180,7 +189,7 @@ class YamlInitializer(TextInitializer):
 
         # inject the dynamic schema path declaration
         decl = f"{self.decl_start}{schema_path}\n"
-        if lines[0].strip().startswith(self.decl_start):
+        if len(lines) and lines[0].strip().startswith(self.decl_start):
             # replace first line if it's a schema declaration
             lines[0] = decl
         else:
@@ -236,3 +245,7 @@ class JSONInitializer(ConfigInitializer):
     def write(self, raw: dict, path: Path):
         with path.open("w") as f:
             json.dump(raw, f)
+
+    def read(self, path: Path) -> dict:
+        with path.open("r") as f:
+            return json.load(f)

@@ -1,9 +1,10 @@
 from pathlib import Path
 from textwrap import dedent
 import unittest
-from click.testing import CliRunner
 
 from config_init.initializers import YamlInitializer
+
+from tests.utils import isolated_filesystem
 
 
 def get_decl(path: Path):
@@ -11,10 +12,6 @@ def get_decl(path: Path):
 
 
 class TestYamlDirect(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.runner = CliRunner()
-
     def setUp(self) -> None:
         self.default = dedent(
             """
@@ -41,7 +38,7 @@ class TestYamlDirect(unittest.TestCase):
 
         path = Path("test.yml")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path)
             written = self.get_config(path)
             self.assertEqual(written, self.default)
@@ -51,7 +48,7 @@ class TestYamlDirect(unittest.TestCase):
 
         path = Path("test.yml")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
@@ -68,7 +65,7 @@ class TestYamlDirect(unittest.TestCase):
 
         path = Path("test.yml")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path)
             written = self.get_config(path)
 
@@ -84,7 +81,7 @@ class TestYamlDirect(unittest.TestCase):
 
         path = Path("test.yml")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path, schema_path=schema_path, inject_schema=False)
             written = self.get_config(path)
 
@@ -97,7 +94,7 @@ class TestYamlDirect(unittest.TestCase):
 
         path = Path("config/test.yml")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
@@ -111,7 +108,7 @@ class TestYamlDirect(unittest.TestCase):
 
         path = Path("test.yml")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)

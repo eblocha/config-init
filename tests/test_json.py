@@ -1,17 +1,13 @@
 import json
 from pathlib import Path
 import unittest
-from click.testing import CliRunner
 from config_init.initializers import JSONInitializer
+
+from tests.utils import isolated_filesystem
 
 
 class TestJSONDirect(unittest.TestCase):
     """JSON initializer with a direct default value"""
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.runner = CliRunner()
-
     def setUp(self) -> None:
         self.default = {"name": "Test", "email": "test@example.com"}
         self.schema = {"$schema": ""}
@@ -27,7 +23,7 @@ class TestJSONDirect(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path)
             written = self.get_config(path)
             self.assertDictEqual(written, self.default)
@@ -37,7 +33,7 @@ class TestJSONDirect(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
@@ -54,7 +50,7 @@ class TestJSONDirect(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
 
             initializer.init(path)
             written = self.get_config(path)
@@ -71,7 +67,7 @@ class TestJSONDirect(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
 
             initializer.init(path, schema_path=schema_path, inject_schema=False)
             written = self.get_config(path)
@@ -85,7 +81,7 @@ class TestJSONDirect(unittest.TestCase):
 
         path = Path("config/test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path, schema_path=schema_path)
             written = self.get_config(path)
 
@@ -96,11 +92,6 @@ class TestJSONDirect(unittest.TestCase):
 
 class TestJSONNone(unittest.TestCase):
     """JSON initializer with None for a default config value"""
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.runner = CliRunner()
-
     def setUp(self) -> None:
         self.default = None
         self.schema = {"$schema": ""}
@@ -110,7 +101,7 @@ class TestJSONNone(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path)
             self.assertListEqual(list(Path().iterdir()), [])
 
@@ -119,16 +110,13 @@ class TestJSONNone(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             schema_path = Path("schema") / "schema.json"
-            self.assertListEqual(list(Path().iterdir()), [])
+            initializer.init(path, schema_path)
+            self.assertTrue(schema_path.exists())
 
 
 class TestJSONLambda(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.runner = CliRunner()
-
     def setUp(self) -> None:
         self.default = lambda name="Test": {"name": name, "email": "test@example.com"}
         self.schema = {"$schema": ""}
@@ -144,7 +132,7 @@ class TestJSONLambda(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path)
             written = self.get_config(path)
             self.assertDictEqual(written, self.default())
@@ -154,7 +142,7 @@ class TestJSONLambda(unittest.TestCase):
 
         path = Path("test.json")
 
-        with self.runner.isolated_filesystem():
+        with isolated_filesystem():
             initializer.init(path, name="test2")
             written = self.get_config(path)
             self.assertDictEqual(written, self.default(name="test2"))
