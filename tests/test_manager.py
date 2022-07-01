@@ -1,3 +1,4 @@
+import json
 import logging
 from pathlib import Path
 from time import sleep
@@ -153,3 +154,70 @@ class TestInitTemplate(TestConfigManager):
 
             self.assertFalse((self.root / self.path).exists())
             self.assertFalse(written)
+
+
+class TestConfig(TestConfigManager):
+    def setUp(self) -> None:
+        self.initializer = JSONInitializer({})
+        self.path = Path("config.json")
+        self.manager = ConfigManager(
+            self.constructor, self.path, initializer=self.initializer
+        )
+
+    def test_config_cached(self):
+        """Ensure the config object is cached when the same root is passed"""
+        with isolated_filesystem():
+            self.manager.init()
+
+            cfg = self.manager.config()
+            cfg2 = self.manager.config()
+
+            self.assertIs(cfg, cfg2)
+
+    def test_cache_miss(self):
+        """Ensure a new config is created when a new root is passed"""
+        with isolated_filesystem():
+            self.manager.init("test")
+            self.manager.init("test2")
+
+            cfg = self.manager.config("test")
+            cfg2 = self.manager.config("test2")
+
+            self.assertIsNot(cfg, cfg2)
+
+    def test_cache_dep_change(self):
+        """Ensure a new config is created when the config path is changed"""
+        path2 = Path("config2.json")
+
+        with isolated_filesystem():
+            self.manager.init()
+
+            cfg = self.manager.config()
+            self.manager.path = Path("config2.json")
+            with path2.open("w") as f:
+                json.dump({}, f)
+            cfg2 = self.manager.config()
+
+            self.assertIsNot(cfg, cfg2)
+
+    def test_cache_retried(self):
+        """Ensure we retry loading the config if it is created between cache misses"""
+        with isolated_filesystem():
+            cfg = self.manager.config()
+            self.manager.init()
+            cfg2 = self.manager.config()
+
+            self.assertIsNone(cfg)
+            self.assertIsInstance(cfg2, self.constructor)
+
+    def test_cache_clear(self):
+        """Ensure a new config is created if the cache is cleared"""
+        with isolated_filesystem():
+            self.manager.init()
+            self.manager.init()
+
+            cfg = self.manager.config()
+            self.manager.clear_cache()
+            cfg2 = self.manager.config()
+
+            self.assertIsNot(cfg, cfg2)
