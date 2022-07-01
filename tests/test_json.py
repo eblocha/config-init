@@ -8,6 +8,7 @@ from tests.utils import isolated_filesystem
 
 class TestJSONDirect(unittest.TestCase):
     """JSON initializer with a direct default value"""
+
     def setUp(self) -> None:
         self.default = {"name": "Test", "email": "test@example.com"}
         self.schema = {"$schema": ""}
@@ -92,11 +93,13 @@ class TestJSONDirect(unittest.TestCase):
 
 class TestJSONNone(unittest.TestCase):
     """JSON initializer with None for a default config value"""
+
     def setUp(self) -> None:
         self.default = None
         self.schema = {"$schema": ""}
 
     def test_noschema(self):
+        """Nothing should happen on init with no schema path"""
         initializer = JSONInitializer(self.default)
 
         path = Path("test.json")
@@ -106,6 +109,7 @@ class TestJSONNone(unittest.TestCase):
             self.assertListEqual(list(Path().iterdir()), [])
 
     def test_direct_schema(self):
+        """Init should only create a schema file"""
         initializer = JSONInitializer(self.default, schema=self.schema)
 
         path = Path("test.json")
@@ -128,6 +132,7 @@ class TestJSONLambda(unittest.TestCase):
             return json.load(f)
 
     def test_no_args(self):
+        """Ensure the config is initialized if no kwargs are passed to init"""
         initializer = JSONInitializer(self.default)
 
         path = Path("test.json")
@@ -138,6 +143,7 @@ class TestJSONLambda(unittest.TestCase):
             self.assertDictEqual(written, self.default())
 
     def test_args_passed(self):
+        """Ensure the config is initialized if kwargs are passed to init"""
         initializer = JSONInitializer(self.default)
 
         path = Path("test.json")
