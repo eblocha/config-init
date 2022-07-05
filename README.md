@@ -72,6 +72,54 @@ initializer.init(
 )
 ```
 
+## ConfigManager
+
+In addition to the initializer classes, a ConfigManager class is provided to assist with initializing a config from either a template, or the default.
+It also can load a config from the file into a python object, and cache it.
+
+```py
+from dataclasses import dataclass
+from config_init import ConfigManager
+
+@dataclass
+class MyConfig:
+    name: str
+
+manager = ConfigManager(
+    # constructor is the python class for the config
+    constructor=MyConfig,
+    # path is a str or pathlib.Path object, relative to a "root" directory provided later
+    path="config.json",
+    # initializer is a ConfigInitializer instance, definining the schema and default config
+    initializer=JSONInitializer(default={"name": "John"}),
+    # schema_path is a str, pathlib.Path, or None. It is relative to the "root" directory.
+    # If None, no schema will be used.
+    schema_path=None,
+)
+
+# initialize the config and schema under a directory "project"
+manager.init(root="project")
+
+# get the config written as a python object (this is cached, and refreshed if 'root' changes)
+# `config` will be type `MyConfig`
+config = manager.config(root="project")
+```
+
+### Use a template
+
+```py
+# The config will be copied from "existing-project"
+manager.init(root="project", template="existing-project")
+```
+
+### Overwriting an existing config file
+
+If the config already exists when `init` is called, it will not be overwritten. To force an overwrite, pass `overwrite=True`:
+
+```py
+manager.init(root="project", overwrite=True)
+```
+
 ## Other formats
 
 In addition to JSON, these formats are provided:
